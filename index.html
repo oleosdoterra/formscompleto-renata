@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="logo.png.jpg">
+  <link rel="apple-touch-icon" href="logo.png.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>dōTERRA | O que você procura hoje?</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --purple:       #8B4FA3;
+      --purple-dark:  #4C1D95;
+      --purple-darker:#2D1454;
+      --purple-mid:   #7C3AED;
+      --purple-light: #F0E6F5;
+      --purple-glow:  rgba(139,79,163,0.35);
+    }
+
+    html {
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    * {
+      font-family: 'Montserrat', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #FAFAFA;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* ─── Camadas de fundo ─── */
+    .bg-layer { position: fixed; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+
+    .bg-grad-top {
+      position: absolute;
+      top: -10%; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 500px;
+      opacity: 0.28;
+      background: radial-gradient(ellipse at top, var(--purple) 0%, transparent 70%);
+      filter: blur(100px);
+    }
+    .bg-grad-br {
+      position: absolute;
+      bottom: -20%; right: -10%;
+      width: 500px; height: 400px;
+      opacity: 0.18;
+      background: radial-gradient(circle at bottom right, var(--purple-dark) 0%, transparent 60%);
+      filter: blur(80px);
+    }
+    .bg-noise {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      opacity: 0.025;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .bg-grid {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background-image:
+        linear-gradient(to right, rgba(128,128,128,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(128,128,128,0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%);
+      mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%);
+    }
+
+    /* ─── Badge superior ─── */
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 999px;
+      background: rgba(139,79,163,0.10);
+      border: 1px solid rgba(139,79,163,0.20);
+      color: var(--purple);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* ─── Cards ─── */
+    .card {
+      position: relative;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 28px;
+      min-height: 340px;
+      text-decoration: none;
+      -webkit-perspective: 1000px;
+      perspective: 1000px;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+      transition: transform 0.30s cubic-bezier(0.22,1,0.36,1),
+                  box-shadow 0.30s ease,
+                  border-color 0.30s ease;
+    }
+
+    /* Card claro */
+    .card-light {
+      background: #fff;
+      color: #111;
+      border: 1px solid #E8E3F0;
+      border-top: 4px solid var(--purple);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .card-light:hover {
+      border-color: rgba(139,79,163,0.35);
+      border-top-color: var(--purple);
+      box-shadow: 0 20px 60px rgba(139,79,163,0.22), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* Card escuro */
+    .card-dark {
+      background: linear-gradient(145deg, #3d1a6e, #553080 55%, #6b3fa0);
+      color: #fff;
+      border: 1px solid rgba(139,79,163,0.25);
+      box-shadow: 0 8px 40px rgba(76,29,149,0.45);
+    }
+    .card-dark:hover {
+      border-color: rgba(139,79,163,0.55);
+      box-shadow: 0 24px 70px rgba(76,29,149,0.60), 0 4px 16px rgba(0,0,0,0.22);
+    }
+
+    /* Glow de canto — aparece no hover */
+    .corner-glow {
+      position: absolute;
+      top: -64px; right: -64px;
+      width: 192px; height: 192px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .card-light .corner-glow  { background: radial-gradient(circle, rgba(139,79,163,0.25), transparent 70%); }
+    .card-dark  .corner-glow  { background: radial-gradient(circle, rgba(167,139,250,0.30), transparent 70%); }
+    .card:hover .corner-glow  { opacity: 1; }
+
+    /* Ícone decorativo de fundo */
+    .bg-deco-icon {
+      position: absolute;
+      bottom: -20px; right: -20px;
+      pointer-events: none;
+      transition: transform 0.7s ease;
+    }
+    .card:hover .bg-deco-icon { transform: scale(1.1) rotate(-6deg); }
+
+    /* ─── Badge do card ─── */
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      width: -webkit-fit-content;
+      width: fit-content;
+      position: relative;
+      z-index: 10;
+    }
+    .card-badge-light {
+      background: rgba(139,79,163,0.10);
+      color: var(--purple);
+      border: 1px solid rgba(139,79,163,0.20);
+      animation: pulseRing 2.5s ease-in-out infinite;
+    }
+    .card-badge-dark {
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    @keyframes pulseRing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(139,79,163,0.40); }
+      50%       { box-shadow: 0 0 0 6px rgba(139,79,163,0); }
+    }
+
+    /* ─── Barrinhas mercado ─── */
+    .market-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+    .market-bar  { width: 3px; border-radius: 2px; background: #A78BFA; animation: barRise 1.1s ease-in-out infinite alternate; }
+    .market-bar:nth-child(1) { animation-delay: 0.0s; }
+    .market-bar:nth-child(2) { animation-delay: 0.2s; }
+    .market-bar:nth-child(3) { animation-delay: 0.4s; }
+    .market-bar:nth-child(4) { animation-delay: 0.15s; }
+    .market-bar:nth-child(5) { animation-delay: 0.35s; }
+    @keyframes barRise {
+      from { height: 3px;  opacity: 0.5; }
+      to   { height: 12px; opacity: 1;   }
+    }
+
+    /* ─── Ponto "ao vivo" ─── */
+    .live-dot { position: relative; width: 8px; height: 8px; flex-shrink: 0; }
+    .live-dot-inner { width: 8px; height: 8px; border-radius: 50%; background: #A78BFA; position: absolute; }
+    .live-dot-ring  { width: 8px; height: 8px; border-radius: 50%; background: rgba(167,139,250,0.5); position: absolute; animation: livePing 1.5s ease-out infinite; }
+    @keyframes livePing {
+      0%   { transform: scale(1);   opacity: 0.7; }
+      100% { transform: scale(2.8); opacity: 0;   }
+    }
+
+    /* ─── Caixa do ícone ─── */
+    .icon-box {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease;
+      position: relative; z-index: 10;
+    }
+    .card:hover .icon-box { transform: scale(1.12); }
+    .icon-box-light { background: var(--purple); box-shadow: 0 4px 20px rgba(139,79,163,0.40); }
+    .icon-box-dark  { background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+    .card:hover .icon-box-light { box-shadow: 0 8px 28px rgba(139,79,163,0.55); }
+    .card:hover .icon-box-dark  { box-shadow: 0 8px 28px rgba(0,0,0,0.22); }
+
+    /* ─── Botão CTA ─── */
+    .btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      transition: filter 0.25s ease, box-shadow 0.25s ease;
+      position: relative; z-index: 10;
+    }
+    .btn-cta-light {
+      background: linear-gradient(135deg, var(--purple), #6F3D84);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(139,79,163,0.35);
+    }
+    .btn-cta-dark {
+      background: #ffffff;
+      color: #3d1a6e;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .card:hover .btn-cta { filter: brightness(1.10); }
+    .card:hover .btn-cta-light { box-shadow: 0 8px 28px rgba(139,79,163,0.50); }
+    .card:hover .btn-cta-dark  { box-shadow: 0 8px 28px rgba(124,58,237,0.60); }
+
+    .btn-arrow {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.20);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+      transition: transform 0.30s cubic-bezier(0.22,1,0.36,1);
+    }
+    .card:hover .btn-arrow { transform: translateX(4px); }
+
+    /* ─── Entrada escalonada ─── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.60s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .d1 { animation-delay: 0.08s; }
+    .d2 { animation-delay: 0.20s; }
+    .d3 { animation-delay: 0.34s; }
+    .d4 { animation-delay: 0.46s; }
+    .d5 { animation-delay: 0.60s; }
+    .d6 { animation-delay: 0.74s; }
+    .d7 { animation-delay: 0.86s; }
+
+    /* ─── Partículas ─── */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      animation: particleRise 7s ease-in-out infinite;
+    }
+    @keyframes particleRise {
+      0%   { opacity: 0; transform: translateY(0)   scale(0.5); }
+      30%  { opacity: 0.50; }
+      70%  { opacity: 0.30; }
+      100% { opacity: 0; transform: translateY(-140px) scale(1.2); }
+    }
+
+    /* ─── Feedback visual ao toque ─── */
+    .card:active {
+      transform: scale(0.97);
+      opacity: 0.92;
+      transition: transform 0.12s ease, opacity 0.12s ease !important;
+    }
+
+    @media (max-width: 640px) {
+      .card { padding: 22px; min-height: auto; touch-action: manipulation; }
+    }
+
+    /* Telas muito pequenas (320px) */
+    @media (max-width: 360px) {
+      .card { padding: 18px; }
+      .card-badge { font-size: 10px; padding: 3px 9px; }
+      .icon-box { width: 48px; height: 48px; font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fundo em camadas -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-grad-top"></div>
+    <div class="bg-grad-br"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Partículas -->
+  <div id="particles" aria-hidden="true"></div>
+
+  <!-- Conteúdo -->
+  <div class="relative z-10 flex flex-col items-center justify-center px-4 py-14 sm:py-20" style="min-height:100vh; min-height:100dvh;">
+    <div class="w-full max-w-5xl mx-auto flex flex-col items-center gap-12">
+
+      <!-- Cabeçalho -->
+      <div class="flex flex-col items-center gap-5 text-center">
+
+<!-- Consultora -->
+        <div class="flex flex-col items-center gap-3 fade-up d3">
+          <div style="width:90px; height:90px; border-radius:50%; overflow:hidden; box-shadow:0 4px 20px rgba(139,79,163,0.35); flex-shrink:0;">
+            <img src="fotoperfilrenata.png" alt="Renata Garcia" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div class="text-center">
+            <p class="text-[15px] font-bold text-gray-800">Renata Garcia</p>
+            <p class="text-[12px] text-gray-400 font-medium mt-0.5">Consultora dōTERRA</p>
+          </div>
+        </div>
+
+        <h1 class="text-[26px] sm:text-[36px] md:text-[42px] font-extrabold text-gray-900 leading-[1.1] tracking-tight max-w-xl fade-up d4">
+          O que você procura hoje?
+        </h1>
+        <p class="text-[15px] sm:text-[17px] text-gray-500 max-w-md leading-relaxed font-medium fade-up d4">
+          Escolha uma opção para continuar em uma experiência personalizada.
+        </p>
+      </div>
+
+      <!-- Grid de cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 w-full max-w-3xl">
+
+        <!-- Card 1: Óleos essenciais -->
+        <a href="index-captacao.html" class="card card-light fade-up d5" ontouchstart="" style="touch-action:manipulation;">
+
+          <div class="corner-glow"></div>
+
+          <!-- Ícone decorativo de fundo -->
+          <svg class="bg-deco-icon" width="140" height="140" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+               style="color:rgba(139,79,163,0.07);" aria-hidden="true">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
+
+          <!-- Badge -->
+          <span class="card-badge card-badge-light">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" aria-hidden="true">
+              <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>
+            </svg>
+            Mais buscado
+          </span>
+
+          <!-- Ícone + stat -->
+          <div class="flex items-end gap-4 mt-5 relative z-10">
+            <div class="icon-box icon-box-light">🌿</div>
+            <div class="pb-1">
+              <p class="text-[22px] sm:text-[28px] font-extrabold leading-none tracking-tight" style="color:var(--purple);">Saúde Natural</p>
+              <p class="mt-1 text-[12px] sm:text-[13px] font-semibold text-gray-400">com óleos essenciais dōTERRA</p>
+            </div>
+          </div>
+
+          <!-- Texto -->
+          <div class="mt-5 flex-1 relative z-10 pb-6">
+            <h2 class="text-[18px] sm:text-[20px] font-extrabold leading-snug tracking-tight text-gray-900">
+              Quero conhecer os Óleos Essenciais
+            </h2>
+            <p class="mt-2.5 text-[13px] sm:text-[14px] leading-relaxed font-medium text-gray-500">
+              Descubra em 2 minutos quais óleos podem te ajudar no dia a dia de forma natural.
+            </p>
+            <ul class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+              <li class="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-gray-500">
+                ✅
+                Orientação personalizada
+              </li>
+              <li class="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-gray-500">
+                ✅
+                Sem compromisso
+              </li>
+            </ul>
+          </div>
+
+          <!-- CTA -->
+          <div class="btn-cta btn-cta-light mt-auto">
+            <span>Descobrir meus óleos</span>
+            <span class="btn-arrow">→</span>
+          </div>
+
+        </a>
+
+        <!-- Card 2: Oportunidade de negócio -->
+        <a href="index-negocio.html" class="card card-dark fade-up d6" ontouchstart="" style="touch-action:manipulation;">
+
+          <div class="corner-glow"></div>
+
+          <!-- Ícone decorativo de fundo -->
+          <svg class="bg-deco-icon" width="140" height="140" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="0.8" stroke-linecap="round"
+               style="color:rgba(255,255,255,0.06);" aria-hidden="true">
+            <path d="M16 7h6v6"/>
+            <path d="m22 7-8.5 8.5-5-5L2 17"/>
+          </svg>
+
+          <!-- Badge -->
+          <span class="card-badge card-badge-dark">
+            <span class="live-dot">
+              <span class="live-dot-ring"></span>
+              <span class="live-dot-inner"></span>
+            </span>
+            Mercado em expansão
+            <span class="market-bars">
+              <span class="market-bar"></span>
+              <span class="market-bar"></span>
+              <span class="market-bar"></span>
+              <span class="market-bar"></span>
+              <span class="market-bar"></span>
+            </span>
+          </span>
+
+          <!-- Ícone + stat -->
+          <div class="flex items-end gap-4 mt-5 relative z-10">
+            <div class="icon-box icon-box-dark">💰</div>
+            <div class="pb-1">
+              <p class="text-[22px] sm:text-[28px] font-extrabold leading-none tracking-tight" style="color:#C084FC;">Renda Extra</p>
+              <p class="mt-1 text-[12px] sm:text-[13px] font-semibold" style="color:rgba(255,255,255,0.55);">com modelo comprovado</p>
+            </div>
+          </div>
+
+          <!-- Texto -->
+          <div class="mt-5 flex-1 relative z-10 pb-6">
+            <h2 class="text-[18px] sm:text-[20px] font-extrabold leading-snug tracking-tight text-white">
+              Quero gerar renda com a dōTERRA
+            </h2>
+            <p class="mt-2.5 text-[13px] sm:text-[14px] leading-relaxed font-medium" style="color:rgba(255,255,255,0.65);">
+              Veja como transformar o mercado de bem-estar em uma fonte de renda recorrente.
+            </p>
+            <ul class="mt-4 flex flex-col gap-y-2">
+              <li class="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold" style="color:rgba(255,255,255,0.75);">
+                ✅
+                Comece do zero
+              </li>
+              <li class="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold" style="color:rgba(255,255,255,0.75);">
+                ✅
+                Suporte completo
+              </li>
+            </ul>
+          </div>
+
+          <!-- CTA -->
+          <div class="btn-cta btn-cta-dark mt-auto">
+            <span>Conhecer a oportunidade</span>
+            <span class="btn-arrow" style="background:rgba(61,26,110,0.15);">→</span>
+          </div>
+
+        </a>
+
+      </div>
+
+      <!-- Rodapé -->
+      <p class="text-[12px] text-gray-400 text-center fade-up d7">
+        🔒 Seus dados estão protegidos. Sem spam.
+      </p>
+
+    </div>
+  </div>
+
+  <script>
+    /* ── Partículas ── */
+    const pContainer = document.getElementById('particles');
+    const pColors = ['#C4B5FD','#A78BFA','#DDD6FE','#8B4FA3','#7C3AED'];
+    for (let i = 0; i < 16; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 7 + 3;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        background:${pColors[Math.floor(Math.random() * pColors.length)]};
+        left:${Math.random() * 100}vw;
+        bottom:${Math.random() * 25}vh;
+        animation-delay:${Math.random() * 7}s;
+        animation-duration:${5 + Math.random() * 5}s;
+      `;
+      pContainer.appendChild(p);
+    }
+
+    /* ── Scale + inclinação magnética (apenas não-touch) ── */
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    if (!isTouch) {
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transition = 'transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease, border-color 0.25s ease';
+          card.style.transform = 'translateY(-14px) scale(1.03)';
+        });
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width  - 0.5) * 8;
+          const y = ((e.clientY - r.top)  / r.height - 0.5) * 8;
+          card.style.transition = 'transform 0.08s ease';
+          card.style.transform = `translateY(-14px) scale(1.03) rotateX(${-y}deg) rotateY(${x}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transition = 'transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.30s ease, border-color 0.30s ease';
+          card.style.transform = '';
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
